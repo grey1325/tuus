@@ -418,7 +418,119 @@ from tomlkit import value
 #     result = re.search(pattern, text)
 #     return result.group()
 
+#ООП
+# email_1 = "ivan@test.com"
+# phone_1 = "+7 999 123-45-67"
+# print(f"Email валиден: {validate_email_regex(email_1)}")
+# print(f"Телефон валиден: {validate_phone_regex(phone_1)}")
+#
+# text_1 = "Заказ #123!!! Сумма: 5000 руб."
+# print(f"Очищенный текст: {clean_input(text_1)}")
+#
+# text_2 = "Свяжитесь с нами: support@example.com для помощи"
+# print(f"Извлеченный email: {extract_email_from_text(text_2)}")
 
+# from models.user import User
+# from models.product import Product
+# from models.order import Order
+#
+# user = User("Иван Иванов", "ivan@test.com")
+# product_1 = Product("Ноутбук", 50000, 1)
+# product_2 = Product("Мышь", 1500, 2)
+# product_1_total_price = product_1.get_total_price()
+# product_2_total_price = product_2.get_total_price()
+#
+# order = Order(user, [product_1, product_2])
+#
+# print(user.get_info())
+# print(f"Общая стоимость заказа: {order.calculate_total()}")
+
+# from models.user import User
+# from models.product import Product
+# from models.order import Order
+#
+# user = User("Иван Иванов", "ivan@test.com")
+# product_1 = Product("Ноутбук", 50000, 1)
+# product_2 = Product("Мышь", 1500, 2)
+# product_1_total_price = product_1.get_total_price()
+# product_2_total_price = product_2.get_total_price()
+#
+# order = Order(user, [product_1, product_2])
+#
+# print(user.get_info())
+# print(f"Общая стоимость заказа: {order.calculate_total()}")
+
+# from models.payment import CardPayment, PayPalPayment
+#
+# payments = [
+#     CardPayment(1000, "1234 5678 9012 3456"),
+#     PayPalPayment(2000, "user@paypal.com")
+# ]
+#
+# for payment in payments:
+#     print(payment.process_payment())
+
+# from models.product import Product
+# from models.order import Order
+#
+# order = Order(1, "Иван", 50000, [])
+# products = [
+#     Product("Ноутбук", 50000, 10),
+#     Product("Мышь", 1500, 20),
+#     Product("Клавиатура", 3000, 15)
+# ]
+# products.sort()
+# for product in products:
+#     print(product)
+# print(order)
+
+# def divide(a, b):
+#     try:
+#         result = a / b
+#     except ZeroDivisionError:
+#         return "Нельзя делить на ноль!"
+#     except TypeError:
+#         return "Ошибка: неверный тип данных!"
+#     else:
+#         return result
+
+# from models.product import Product
+# from models.order import Order
+# from models.user import User
+#
+# fake_product = Product("Наушники", 1000, 1)
+# product = Product("Ноутбук", -50000, 10)
+# products = [
+#     Product("Ноутбук", 50000, 10),
+#     Product("Мышь", 1500, 20),
+#     Product("Клавиатура", 3000, 15)
+# ]
+# order = Order(1, "Иван", 0, products)
+# order.product_search(fake_product)
+# user = User("Иван Иванов", "ivantest.com")
+
+# from models.product import Product
+# from models.order import Order
+# from src.models.exceptions import NegativePriceError, InsufficientStockError, InvalidOrderError
+#
+# product_1 = Product("Ноутбук", 50000, 10)
+#
+# try:
+#     product_2 = Product("Клавиатура", -3000, 3)
+# except NegativePriceError as e:
+#     print("Ошибка валидации:", e)
+#
+# try:
+#     product_1.sell(100)
+# except InsufficientStockError as e:
+#     print("Ошибка бизнес-логики:", e)
+#
+# try:
+#     order = Order(1, "Иван", 3000, [])
+# except InvalidOrderError as e:
+#     print("Ошибка бизнес-логики:", e)
+
+# Практическое задание
 # def load_orders_from_file(filename):
 #     orders_data = []
 #     try:
