@@ -28,6 +28,15 @@ class Product:
             self.price -= discount_amount
         return self.price
 
+    def check_stock(self):
+        if self.quantity <= 0:
+            raise InsufficientStockError("Товара нет на складе")
+        return True
+
+    def update_stock(self, amount):
+        self.quantity += amount
+        return self.quantity
+
 
     def __str__(self):
         return f"Товар: {self.name}, Цена: {self.price} руб., Количество: {self.quantity}"
