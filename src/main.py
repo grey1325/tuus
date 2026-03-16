@@ -648,17 +648,4 @@ from tomlkit import value
 #
 # process_order_system()
 
-data = ["1", "2", "3", "новый"]
-total = 0
 
-for i in data:
-    if i.isdigit():
-        total += int(i)
-
-print(total)
-
-visitors_day_1 = {"user_123", "user_456", "user_789"}
-visitors_day_2 = {"user_456", "user_789", "user_999"}
-
-new_visitors = visitors_day_1.difference(visitors_day_2)
-print(new_visitors)
