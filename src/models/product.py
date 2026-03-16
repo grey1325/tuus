@@ -22,6 +22,7 @@ class Product:
             raise ValidationError("Цена не может быть отрицательной")
         self.price = price
 
+
     def apply_discount(self, percent):
         if 0 < percent < 100:
             discount_amount = (percent * self.price) / 100
@@ -43,6 +44,10 @@ class Product:
             delivery_cost = self.price * delivery_size
             return delivery_cost
         return 0
+
+    def get_category(self):
+        return self.name
+
 
 
 
