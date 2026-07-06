@@ -21,3 +21,48 @@ dist/
 # Папка со сборкой проекта (содержит временные файлы, сгенерированные в процессе сборки,
 # компиляции или упаковки проекта)
 build/
+
+*.pyc
+.vscode/
+
+# pytest
+.pytest_cache/
+
+# mypy
+.mypy_cache/
+
+# Ruff
+.ruff_cache/
+
+# IDE
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Coverage
+.coverage
+htmlcov/
+
+# Alembic
+*.db
+
+# Env examples
+.env.local
+
+# Educational materials
+learning/
+
+# macOS/Linux env
+.venv/
+
+# Coverage
+.coverage.*
+coverage.xml
+
+# Python cache
+*.pyo
+*.pyd
+
+docs/
