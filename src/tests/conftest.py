@@ -5,5 +5,11 @@ from src.api.main import app
 
 @pytest.fixture()
 def client():
-    test_client = TestClient(app)
-    yield test_client
+    return TestClient(app)
+
+
+@pytest.fixture(autouse=True)
+def clear_dependency_overrides():
+    app.dependency_overrides.clear()
+    yield
+    app.dependency_overrides.clear()

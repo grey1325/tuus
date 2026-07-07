@@ -1,4 +1,3 @@
-from fastapi.testclient import TestClient
 from src.api.main import app
 from src.dependencies import get_product_service
 
@@ -59,35 +58,29 @@ def override_product_service_not_found():
     return FakeProductNotFoundService()
 
 
-app.dependency_overrides[get_product_service] = override_product_service
-
-client = TestClient(app)
-
-
-def test_get_products():
+def test_get_products(client):
+    app.dependency_overrides[get_product_service] = override_product_service
     response = client.get("/products/")
     assert response.status_code == 200
     assert response.json() == [{"id": 1, "name": "Phone", "price": 100.0, "stock": 10}]
 
 
-def test_get_product_success():
+def test_get_product_success(client):
+    app.dependency_overrides[get_product_service] = override_product_service
     response = client.get("/products/1")
     assert response.status_code == 200
     assert response.json() == {"id": 1, "name": "Phone", "price": 100.0, "stock": 10}
 
 
-def test_get_product_not_found():
+def test_get_product_not_found(client):
     app.dependency_overrides[get_product_service] = override_product_service_not_found
-    try:
-        response = client.get("/products/99999")
-        assert response.status_code == 404
-        assert response.json() == {"detail": "Товар не найден"}
-    finally:
-        app.dependency_overrides.clear()
+    response = client.get("/products/99999")
+    assert response.status_code == 404
+    assert response.json() == {"detail": "Товар не найден"}
+
+
+def test_create_product(client):
     app.dependency_overrides[get_product_service] = override_product_service
-
-
-def test_create_product():
     response = client.post(
         "/products/",
         json={"name": "Phone", "price": 100.0, "stock": 10, "category": "Phone"},
@@ -102,7 +95,8 @@ def test_create_product():
     }
 
 
-def test_update_product_succes():
+def test_update_product_succes(client):
+    app.dependency_overrides[get_product_service] = override_product_service
     response = client.put(
         "/products/1", json={"name": "Phone", "price": 100.0, "stock": 10}
     )
@@ -110,21 +104,18 @@ def test_update_product_succes():
     assert response.json() == {"id": 1, "name": "Phone", "price": 100.0, "stock": 10}
 
 
-def test_update_product_not_found():
+def test_update_product_not_found(client):
     app.dependency_overrides[get_product_service] = override_product_service_not_found
-    try:
-        response = client.put(
-            "/products/99999",
-            json={"name": "Phone", "price": 100.0, "stock": 10},
-        )
-        assert response.status_code == 404
-        assert response.json() == {"detail": "Товар не найден"}
-    finally:
-        app.dependency_overrides.clear()
+    response = client.put(
+        "/products/99999",
+        json={"name": "Phone", "price": 100.0, "stock": 10},
+    )
+    assert response.status_code == 404
+    assert response.json() == {"detail": "Товар не найден"}
+
+
+def test_delete_product(client):
     app.dependency_overrides[get_product_service] = override_product_service
-
-
-def test_delete_product():
     response = client.delete("/products/1")
     assert response.status_code == 200
     assert response.json() == {"message": f"Товар {1} удалён"}
