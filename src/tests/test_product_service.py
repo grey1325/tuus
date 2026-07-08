@@ -1,0 +1,66 @@
+import pytest
+
+
+@pytest.mark.asyncio
+async def test_product_success(product_service_mocks, product):
+    service, product_repo = product_service_mocks
+    product_repo.get_by_id.return_value = product
+    result = await service.get_product(product.id)
+    assert result == product
+    product_repo.get_by_id.assert_awaited_once_with(product.id)
+
+
+@pytest.mark.asyncio
+async def test_get_product_not_found(product_service_mocks, product):
+    service, product_repo = product_service_mocks
+    product_repo.get_by_id.return_value = None
+    with pytest.raises(ValueError, match=f"Товар {product.id} не найден"):
+        await service.get_product(product.id)
+    product_repo.get_by_id.assert_awaited_once_with(product.id)
+
+
+@pytest.mark.asyncio
+async def test_get_products_success(product_service_mocks, products):
+    service, product_repo = product_service_mocks
+    product_repo.get_all.return_value = products
+    result = await service.get_products()
+    assert result == products
+    product_repo.get_all.assert_awaited_once_with(skip=0, limit=100)
+
+
+@pytest.mark.asyncio
+async def test_create_product_success(product_service_mocks, product):
+    service, product_repo = product_service_mocks
+    product_repo.create.return_value = product
+    result = await service.create_product(product)
+    created_product = product_repo.create.call_args.args[0]
+    assert result == product
+    assert created_product.name == product.name
+    assert created_product.price == product.price
+    assert created_product.stock == product.stock
+    product_repo.create.assert_awaited_once()
+
+
+@pytest.mark.asyncio
+async def test_update_product_success(product_service_mocks, product, product_update):
+    service, product_repo = product_service_mocks
+    product_repo.update.return_value = product_update
+    result = await service.update_product(product.id, product_update)
+    assert result == product_update
+    product_repo.update.assert_awaited_once_with(product.id, product_update)
+
+
+@pytest.mark.asyncio
+async def test_search_products_success(product_service_mocks, products):
+    service, product_repo = product_service_mocks
+    product_repo.search_products.return_value = products
+    result = await service.search_products()
+    assert result == products
+    product_repo.search_products.assert_awaited_once_with(None, None, None)
+
+
+@pytest.mark.asyncio
+async def test_delete_product_success(product_service_mocks, product):
+    service, product_repo = product_service_mocks
+    await service.delete_product(product.id)
+    product_repo.delete.assert_awaited_once_with(product.id)
