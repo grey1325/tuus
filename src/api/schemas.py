@@ -2,12 +2,20 @@ import datetime
 from enum import Enum
 import html
 import re
-from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    EmailStr,
+    Field,
+    field_serializer,
+    field_validator,
+)
+from decimal import Decimal
 
 
 class ProductCreate(BaseModel):
     name: str = Field(min_length=1, max_length=200, description="Название товара")
-    price: float = Field(
+    price: Decimal = Field(
         gt=0, le=10_000_000, description="Цена товара (должна быть больше 0)"
     )
     stock: int = Field(ge=0, le=100_000)
@@ -30,7 +38,7 @@ class ProductUpdate(BaseModel):
     """Модель для обновления товара"""
 
     name: str | None = Field(None, min_length=1, max_length=200)
-    price: float | None = Field(None, gt=0)
+    price: Decimal | None = Field(None, gt=0)
     stock: int | None = Field(None, ge=0)
 
 
@@ -77,28 +85,40 @@ class OrderStatusUpdate(BaseModel):
 class ProductResponse(BaseModel):
     id: int
     name: str
-    price: float
+    price: Decimal
     stock: int
 
     model_config = ConfigDict(from_attributes=True)
+
+    @field_serializer("price")
+    def serialize_price(self, value: Decimal) -> float:
+        return float(value)
 
 
 class ProductInOrderResponse(BaseModel):
     id: int
     name: str
-    price: float
+    price: Decimal
 
     model_config = ConfigDict(from_attributes=True)
+
+    @field_serializer("price")
+    def serialize_price(self, value: Decimal) -> float:
+        return float(value)
 
 
 class UserResponse(BaseModel):
     id: int
     name: str
     email: str
-    balance: float
+    balance: Decimal
     created_at: datetime.datetime
 
     model_config = ConfigDict(from_attributes=True)
+
+    @field_serializer("balance")
+    def serialize_balance(self, value: Decimal) -> float:
+        return float(value)
 
 
 class OrderItemResponse(BaseModel):
@@ -111,9 +131,13 @@ class OrderItemResponse(BaseModel):
 class OrderResponse(BaseModel):
     id: int
     user_id: int
-    total: float
+    total: Decimal
     status: OrderStatus
     order_date: datetime.datetime
     items: list[OrderItemResponse]
 
     model_config = ConfigDict(from_attributes=True)
+
+    @field_serializer("total")
+    def serialize_total(self, value: Decimal) -> float:
+        return float(value)

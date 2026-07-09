@@ -1,4 +1,5 @@
 from datetime import datetime
+from decimal import Decimal
 
 from sqlalchemy import String, DateTime, ForeignKey, Numeric
 from sqlalchemy.orm import (
@@ -6,7 +7,6 @@ from sqlalchemy.orm import (
     Mapped,
     mapped_column,
     relationship,
-    joinedload,
 )
 
 
@@ -21,7 +21,7 @@ class User(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(100))
     email: Mapped[str] = mapped_column(String(100), unique=True)
-    balance: Mapped[float] = mapped_column(Numeric(10, 2), default=0)
+    balance: Mapped[Decimal] = mapped_column(Numeric(10, 2), default=0)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
 
     orders: Mapped[list["Order"]] = relationship(back_populates="user")
@@ -34,7 +34,7 @@ class Product(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(200))
-    price: Mapped[float] = mapped_column(Numeric(10, 2))
+    price: Mapped[Decimal] = mapped_column(Numeric(10, 2))
     stock: Mapped[int] = mapped_column(default=0)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
 
@@ -48,7 +48,7 @@ class Order(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
-    total: Mapped[float] = mapped_column(Numeric(10, 2))
+    total: Mapped[Decimal] = mapped_column(Numeric(10, 2))
     status: Mapped[str] = mapped_column(String(100), default="pending")
     order_date: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
 
@@ -70,14 +70,3 @@ class OrderItem(Base):
     # Связь с заказом
     order: Mapped["Order"] = relationship(back_populates="items")
     product: Mapped["Product"] = relationship(back_populates="order_items")
-
-
-def get_user_orders_orm(session, user_id):
-    """Получить заказы пользователя через ORM с оптимизацией N+1"""
-    orders = (
-        session.query(Order)
-        .options(joinedload(Order.items).joinedload(OrderItem.product))
-        .filter(Order.user_id == user_id)
-        .all()
-    )
-    return orders

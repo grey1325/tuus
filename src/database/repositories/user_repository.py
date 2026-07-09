@@ -1,10 +1,11 @@
 from sqlalchemy import select
 from src.api.schemas import UserUpdate
 from src.database.models import User
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class UserRepository:
-    def __init__(self, session):
+    def __init__(self, session: AsyncSession):
         self.session = session
 
     async def get_by_id(self, user_id: int) -> User | None:
@@ -44,4 +45,3 @@ class UserRepository:
             raise ValueError(f"Пользователь {user_id} не найден")
         await self.session.delete(user)
         await self.session.flush()
-        print(f"User {user_id} deleted")

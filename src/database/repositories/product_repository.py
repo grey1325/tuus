@@ -83,7 +83,5 @@ class ProductRepository:
         product = await self.get_by_id(product_id)
         if product is None:
             raise ValueError(f"Товар {product_id} не найден")
-
         await self.session.delete(product)
         await self.session.flush()
-        print(f"Product {product_id} deleted")
