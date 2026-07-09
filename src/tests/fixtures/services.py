@@ -2,6 +2,7 @@ from unittest.mock import AsyncMock
 import pytest
 from src.services.product_service import ProductService
 from src.services.order_service import OrderService
+from src.services.user_service import UserService
 
 
 @pytest.fixture
@@ -18,3 +19,10 @@ def product_service_mocks():
     product_repo = AsyncMock()
     service = ProductService(product_repo)
     return service, product_repo
+
+
+@pytest.fixture
+def user_service_mocks():
+    user_repo = AsyncMock()
+    service = UserService(user_repo)
+    return service, user_repo

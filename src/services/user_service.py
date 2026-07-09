@@ -14,7 +14,7 @@ class UserService:
         return user
 
     async def get_users(self, skip: int = 0, limit: int = 100):
-        users = await self.user_repo.get_all(skip, limit)
+        users = await self.user_repo.get_all(skip=skip, limit=limit)
         return users
 
     async def create_user(self, user):
