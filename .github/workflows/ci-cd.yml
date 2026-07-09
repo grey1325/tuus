@@ -36,7 +36,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          run: pip install -r requirements-dev.txt
+          pip install -r requirements-dev.txt
 
       - name: Lint with ruff
         run: |
@@ -50,7 +50,7 @@ jobs:
 
       - name: Run tests
         env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/sfmshop_test
+          DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/sfmshop_test
         run: |
           pytest --cov=src --cov-report=xml
 
