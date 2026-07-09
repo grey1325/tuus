@@ -1,4 +1,4 @@
-# SFMShop
+# TUUS
 
 Backend интернет-магазина, разработанный на Python и FastAPI.
 

@@ -1,4 +1,4 @@
-# Git Workflow для проекта SFMShop
+# Git Workflow для проекта TUUS
 
 ## Использованные команды Git
 - git init - инициализация репозитория

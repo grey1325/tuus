@@ -25,7 +25,7 @@ from src.api.routes.products import router as products_router
 from src.api.routes.users import router as users_router
 from src.api.routes.orders import router as orders_router
 
-app = FastAPI(title="SFMShop API", version="1.0.0")
+app = FastAPI(title="TUUS API", version="1.0.0")
 
 
 @app.middleware("http")
