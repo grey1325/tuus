@@ -51,6 +51,7 @@ jobs:
       - name: Run tests
         env:
           DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/sfmshop_test
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
         run: |
           pytest --cov=src --cov-report=xml
 
