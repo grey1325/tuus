@@ -2,8 +2,8 @@ import pytest
 
 
 @pytest.mark.asyncio
-async def test_product_success(product_service_mocks, product):
-    service, product_repo = product_service_mocks
+async def test_product_success(product_service_mock, product):
+    service, product_repo = product_service_mock
     product_repo.get_by_id.return_value = product
     result = await service.get_product(product.id)
     assert result == product
@@ -11,8 +11,8 @@ async def test_product_success(product_service_mocks, product):
 
 
 @pytest.mark.asyncio
-async def test_get_product_not_found(product_service_mocks, product):
-    service, product_repo = product_service_mocks
+async def test_get_product_not_found(product_service_mock, product):
+    service, product_repo = product_service_mock
     product_repo.get_by_id.return_value = None
     with pytest.raises(ValueError, match=f"Товар {product.id} не найден"):
         await service.get_product(product.id)
@@ -20,8 +20,8 @@ async def test_get_product_not_found(product_service_mocks, product):
 
 
 @pytest.mark.asyncio
-async def test_get_products_success(product_service_mocks, products):
-    service, product_repo = product_service_mocks
+async def test_get_products_success(product_service_mock, products):
+    service, product_repo = product_service_mock
     product_repo.get_all.return_value = products
     result = await service.get_products()
     assert result == products
@@ -29,8 +29,8 @@ async def test_get_products_success(product_service_mocks, products):
 
 
 @pytest.mark.asyncio
-async def test_create_product_success(product_service_mocks, product):
-    service, product_repo = product_service_mocks
+async def test_create_product_success(product_service_mock, product):
+    service, product_repo = product_service_mock
     product_repo.create.return_value = product
     result = await service.create_product(product)
     created_product = product_repo.create.call_args.args[0]
@@ -42,8 +42,8 @@ async def test_create_product_success(product_service_mocks, product):
 
 
 @pytest.mark.asyncio
-async def test_update_product_success(product_service_mocks, product, product_update):
-    service, product_repo = product_service_mocks
+async def test_update_product_success(product_service_mock, product, product_update):
+    service, product_repo = product_service_mock
     product_repo.update.return_value = product_update
     result = await service.update_product(product.id, product_update)
     assert result == product_update
@@ -51,8 +51,8 @@ async def test_update_product_success(product_service_mocks, product, product_up
 
 
 @pytest.mark.asyncio
-async def test_search_products_success(product_service_mocks, products):
-    service, product_repo = product_service_mocks
+async def test_search_products_success(product_service_mock, products):
+    service, product_repo = product_service_mock
     product_repo.search_products.return_value = products
     result = await service.search_products()
     assert result == products
@@ -60,7 +60,7 @@ async def test_search_products_success(product_service_mocks, products):
 
 
 @pytest.mark.asyncio
-async def test_delete_product_success(product_service_mocks, product):
-    service, product_repo = product_service_mocks
+async def test_delete_product_success(product_service_mock, product):
+    service, product_repo = product_service_mock
     await service.delete_product(product.id)
     product_repo.delete.assert_awaited_once_with(product.id)

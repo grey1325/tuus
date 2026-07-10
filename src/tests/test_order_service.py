@@ -4,15 +4,15 @@ from src.api.schemas import OrderCreate, OrderItemCreate, OrderStatus
 
 
 @pytest.mark.asyncio
-async def test_empty_order(order_service_mocks, user):
-    service, _, _, _ = order_service_mocks
+async def test_empty_order(order_service_mock, user):
+    service, _, _, _ = order_service_mock
     with pytest.raises(ValueError, match="Пустой заказ"):
         await service.create_order(OrderCreate(user_id=user.id, items=[]))
 
 
 @pytest.mark.asyncio
-async def test_user_not_found(order_service_mocks, user, product):
-    service, _, user_repo, _ = order_service_mocks
+async def test_user_not_found(order_service_mock, user, product):
+    service, _, user_repo, _ = order_service_mock
     user_repo.get_by_id.return_value = None
     with pytest.raises(ValueError, match=f"Пользователь {user.id} не найден"):
         await service.create_order(
@@ -24,8 +24,8 @@ async def test_user_not_found(order_service_mocks, user, product):
 
 
 @pytest.mark.asyncio
-async def test_product_not_found(order_service_mocks, user, product):
-    service, _, user_repo, product_repo = order_service_mocks
+async def test_product_not_found(order_service_mock, user, product):
+    service, _, user_repo, product_repo = order_service_mock
     user_repo.get_by_id.return_value = user
     product_repo.get_by_ids.return_value = []
     with pytest.raises(ValueError, match=f"Товар {product.id} не найден"):
@@ -40,8 +40,8 @@ async def test_product_not_found(order_service_mocks, user, product):
 
 
 @pytest.mark.asyncio
-async def test_create_order_success(order_service_mocks, user, product, order):
-    service, order_repo, user_repo, product_repo = order_service_mocks
+async def test_create_order_success(order_service_mock, user, product, order):
+    service, order_repo, user_repo, product_repo = order_service_mock
     user_repo.get_by_id.return_value = user
     product_repo.get_by_ids.return_value = [product]
     order_create = OrderCreate(
@@ -64,8 +64,8 @@ async def test_create_order_success(order_service_mocks, user, product, order):
 
 
 @pytest.mark.asyncio
-async def test_create_order_insufficient_stock(order_service_mocks, user, product):
-    service, order_repo, user_repo, product_repo = order_service_mocks
+async def test_create_order_insufficient_stock(order_service_mock, user, product):
+    service, order_repo, user_repo, product_repo = order_service_mock
     user_repo.get_by_id.return_value = user
     product.stock = 1
     product_repo.get_by_ids.return_value = [product]
@@ -82,9 +82,9 @@ async def test_create_order_insufficient_stock(order_service_mocks, user, produc
 
 @pytest.mark.asyncio
 async def test_create_order_multiple_products(
-    order_service_mocks, user, products, order
+    order_service_mock, user, products, order
 ):
-    service, order_repo, user_repo, product_repo = order_service_mocks
+    service, order_repo, user_repo, product_repo = order_service_mock
     user_repo.get_by_id.return_value = user
     product_repo.get_by_ids.return_value = products
     order_create = OrderCreate(
@@ -125,8 +125,8 @@ async def test_create_order_multiple_products(
 
 
 @pytest.mark.asyncio
-async def test_get_order_success(order_service_mocks, order):
-    service, order_repo, _, _ = order_service_mocks
+async def test_get_order_success(order_service_mock, order):
+    service, order_repo, _, _ = order_service_mock
     order_repo.get_by_id.return_value = order
     result = await service.get_order(order.id)
     assert result == order
@@ -134,8 +134,8 @@ async def test_get_order_success(order_service_mocks, order):
 
 
 @pytest.mark.asyncio
-async def test_get_order_not_found(order_service_mocks, order):
-    service, order_repo, _, _ = order_service_mocks
+async def test_get_order_not_found(order_service_mock, order):
+    service, order_repo, _, _ = order_service_mock
     order_repo.get_by_id.return_value = None
     with pytest.raises(ValueError, match=f"Заказ {order.id} не найден"):
         await service.get_order(order.id)
@@ -143,8 +143,8 @@ async def test_get_order_not_found(order_service_mocks, order):
 
 
 @pytest.mark.asyncio
-async def test_get_orders_success(order_service_mocks, orders):
-    service, order_repo, _, _ = order_service_mocks
+async def test_get_orders_success(order_service_mock, orders):
+    service, order_repo, _, _ = order_service_mock
     order_repo.get_all.return_value = orders
     result = await service.get_orders()
     assert result == orders
@@ -152,8 +152,8 @@ async def test_get_orders_success(order_service_mocks, orders):
 
 
 @pytest.mark.asyncio
-async def test_update_status_success(order_service_mocks, order):
-    service, order_repo, _, _ = order_service_mocks
+async def test_update_status_success(order_service_mock, order):
+    service, order_repo, _, _ = order_service_mock
     new_status = OrderStatus.PAID
     order_repo.get_by_id.return_value = order
     order_repo.update_status.return_value = order
@@ -164,8 +164,8 @@ async def test_update_status_success(order_service_mocks, order):
 
 
 @pytest.mark.asyncio
-async def test_update_status_not_found(order_service_mocks, order):
-    service, order_repo, _, _ = order_service_mocks
+async def test_update_status_not_found(order_service_mock, order):
+    service, order_repo, _, _ = order_service_mock
     order_repo.get_by_id.return_value = None
     with pytest.raises(ValueError, match=f"Заказ {order.id} не найден"):
         await service.update_status(order.id, OrderStatus.PAID)
