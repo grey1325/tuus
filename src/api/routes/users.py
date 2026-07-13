@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 
-from src.api.schemas import UserCreate, UserResponse, UserUpdate
+from src.api.schemas import UserResponse, UserUpdate
 from src.dependencies import get_user_service
 from src.services.user_service import UserService
 
@@ -23,13 +23,6 @@ async def get_user(user_id: int, user_service: UserService = Depends(get_user_se
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
     return user
-
-
-@router.post("/")
-async def create_user(
-    user: UserCreate, user_service: UserService = Depends(get_user_service)
-):
-    return await user_service.create_user(user)
 
 
 @router.put("/{user_id}")

@@ -1,5 +1,7 @@
 import pytest
 
+from src.exceptions.user_exceptions import UserNotFoundError
+
 
 @pytest.mark.asyncio
 async def test_user_success(user_service_mock, user):
@@ -14,7 +16,7 @@ async def test_user_success(user_service_mock, user):
 async def test_get_user_not_found(user_service_mock, user):
     service, user_repo = user_service_mock
     user_repo.get_by_id.return_value = None
-    with pytest.raises(ValueError, match=f"Пользователь {user.id} не найден"):
+    with pytest.raises(UserNotFoundError, match=f"User {user.id} not found"):
         await service.get_user(user.id)
     user_repo.get_by_id.assert_awaited_once_with(user.id)
 
@@ -32,11 +34,16 @@ async def test_get_users_success(user_service_mock, users):
 async def test_create_user_success(user_service_mock, user):
     service, user_repo = user_service_mock
     user_repo.create.return_value = user
-    result = await service.create_user(user)
+    result = await service.create_user(
+        name=user.name,
+        email=user.email,
+        password_hash=user.password_hash,
+    )
     created_user = user_repo.create.call_args.args[0]
     assert result == user
     assert created_user.name == user.name
     assert created_user.email == user.email
+    assert created_user.password_hash == user.password_hash
 
 
 @pytest.mark.asyncio

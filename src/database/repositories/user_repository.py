@@ -22,6 +22,10 @@ class UserRepository:
         result = await self.session.execute(select(User).offset(skip).limit(limit))
         return list(result.scalars().all())
 
+    async def get_by_email(self, email: str) -> User | None:
+        result = await self.session.execute(select(User).where(User.email == email))
+        return result.scalar_one_or_none()
+
     async def create(self, user: User) -> User:
         """Создать нового пользователя."""
         self.session.add(user)

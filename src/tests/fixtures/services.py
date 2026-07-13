@@ -1,5 +1,6 @@
-from unittest.mock import AsyncMock
+from unittest.mock import AsyncMock, Mock
 import pytest
+from src.services.auth_service import AuthService
 from src.services.jwt_service import JwtService
 from src.services.password_service import PasswordService
 from src.services.product_service import ProductService
@@ -38,3 +39,23 @@ def password_service():
 @pytest.fixture
 def jwt_service():
     return JwtService()
+
+
+@pytest.fixture
+def mock_jwt_service():
+    return Mock(spec=JwtService)
+
+
+@pytest.fixture
+def mock_user_service():
+    return AsyncMock(spec=UserService)
+
+
+@pytest.fixture
+def mock_password_service():
+    return Mock(spec=PasswordService)
+
+
+@pytest.fixture
+def auth_service(mock_user_service, mock_jwt_service, mock_password_service):
+    return AuthService(mock_user_service, mock_jwt_service, mock_password_service)

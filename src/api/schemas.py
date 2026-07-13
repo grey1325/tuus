@@ -47,6 +47,14 @@ class UserCreate(BaseModel):
 
     name: str = Field(min_length=3, max_length=100)
     email: EmailStr
+    password: str = Field(min_length=8, max_length=128)
+
+
+class UserLogin(BaseModel):
+    """Модель для входа пользователя"""
+
+    email: EmailStr
+    password: str = Field(min_length=8, max_length=128)
 
 
 class UserUpdate(BaseModel):
@@ -141,3 +149,11 @@ class OrderResponse(BaseModel):
     @field_serializer("total")
     def serialize_total(self, value: Decimal) -> float:
         return float(value)
+
+
+class TokenResponse(BaseModel):
+    """Ответ с JWT-токенами."""
+
+    access_token: str
+    refresh_token: str
+    token_type: str = "bearer"

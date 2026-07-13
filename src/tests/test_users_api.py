@@ -94,28 +94,6 @@ def test_get_user_not_found(client):
     assert response.json() == {"detail": f"Пользователь {99999} не найден"}
 
 
-def test_create_user(client):
-    app.dependency_overrides[get_user_service] = override_user_service
-    response = client.post(
-        "/users/",
-        json={
-            "id": 1,
-            "name": "Ivan",
-            "email": "new@example.com",
-            "balance": 1000,
-            "created_at": "2026-01-01T00:00:00",
-        },
-    )
-    assert response.status_code == 200
-    assert response.json() == {
-        "id": 1,
-        "name": "Ivan",
-        "email": "new@example.com",
-        "balance": 1000,
-        "created_at": "2026-01-01T00:00:00",
-    }
-
-
 def test_update_user_success(client):
     app.dependency_overrides[get_user_service] = override_user_service
     response = client.put("/users/1", json={"name": "Ivan", "email": "new@example.com"})
