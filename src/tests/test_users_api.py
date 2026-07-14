@@ -1,4 +1,8 @@
-from src.dependencies import get_user_service
+from datetime import datetime
+from decimal import Decimal
+
+from src.database.models import User
+from src.dependencies import get_current_user, get_user_service
 from src.api.main import app
 
 
@@ -57,6 +61,17 @@ def override_user_service():
 
 def override_user_service_not_found():
     return FakeUserNotFoundService()
+
+
+def override_current_user():
+    return User(
+        id=1,
+        name="Ivan",
+        email="new@example.com",
+        password_hash="password",
+        balance=Decimal("1000"),
+        created_at=datetime(2026, 1, 1),
+    )
 
 
 def test_get_users(client):
@@ -118,3 +133,14 @@ def test_delete_user(client):
     response = client.delete("/users/1")
     assert response.status_code == 200
     assert response.json() == {"message": f"Пользователь {1} удалён"}
+
+
+def test_read_users_me(client):
+    app.dependency_overrides[get_current_user] = override_current_user
+    response = client.get("/users/me")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["id"] == 1
+    assert data["name"] == "Ivan"
+    assert data["email"] == "new@example.com"
+    assert data["balance"] == 1000

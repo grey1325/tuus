@@ -1,5 +1,7 @@
 import pytest
 
+from src.exceptions.jwt_exceptions import InvalidTokenError
+from src.dependencies import get_current_user
 from src.exceptions.user_exceptions import UserNotFoundError
 
 
@@ -60,3 +62,45 @@ async def test_delete_user_success(user_service_mock, user):
     service, user_repo = user_service_mock
     await service.delete_user(user.id)
     user_repo.delete.assert_awaited_once_with(user.id)
+
+
+@pytest.mark.asyncio
+async def test_get_current_user_success(mock_jwt_service, mock_user_service, user):
+    mock_jwt_service.decode_token.return_value = {"sub": "1", "type": "access"}
+    mock_user_service.get_user.return_value = user
+
+    result = await get_current_user(
+        token="token", jwt_service=mock_jwt_service, user_service=mock_user_service
+    )
+
+    mock_jwt_service.decode_token.assert_called_once_with("token", "access")
+    mock_user_service.get_user.assert_awaited_once_with(1)
+
+    assert result == user
+
+
+@pytest.mark.asyncio
+async def test_get_current_user_not_found(mock_jwt_service, mock_user_service):
+    mock_jwt_service.decode_token.return_value = {"sub": "1", "type": "access"}
+    mock_user_service.get_user.side_effect = UserNotFoundError("User not found")
+
+    with pytest.raises(UserNotFoundError, match="User not found"):
+        await get_current_user(
+            token="token", jwt_service=mock_jwt_service, user_service=mock_user_service
+        )
+
+    mock_jwt_service.decode_token.assert_called_once_with("token", "access")
+    mock_user_service.get_user.assert_awaited_once_with(1)
+
+
+@pytest.mark.asyncio
+async def test_get_current_user_invalid_token(mock_jwt_service, mock_user_service):
+    mock_jwt_service.decode_token.side_effect = InvalidTokenError("Invalid token")
+
+    with pytest.raises(InvalidTokenError, match="Invalid token"):
+        await get_current_user(
+            token="token", jwt_service=mock_jwt_service, user_service=mock_user_service
+        )
+
+    mock_jwt_service.decode_token.assert_called_once_with("token", "access")
+    mock_user_service.get_user.assert_not_awaited()

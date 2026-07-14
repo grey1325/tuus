@@ -1,7 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 
+
+from src.database.models import User
 from src.api.schemas import UserResponse, UserUpdate
-from src.dependencies import get_user_service
+from src.dependencies import get_current_user, get_user_service
 from src.services.user_service import UserService
 
 router = APIRouter(prefix="/users", tags=["Users"])
@@ -14,6 +16,13 @@ async def get_users(
     user_service: UserService = Depends(get_user_service),
 ):
     return await user_service.get_users(skip=skip, limit=limit)
+
+
+@router.get("/me", response_model=UserResponse)
+async def read_current_user(
+    current_user: User = Depends(get_current_user),
+):
+    return current_user
 
 
 @router.get("/{user_id}", response_model=UserResponse)

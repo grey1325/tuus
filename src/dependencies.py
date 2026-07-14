@@ -1,5 +1,7 @@
 from fastapi import Depends
+from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.ext.asyncio import AsyncSession
+from src.database.models import User
 from src.services.auth_service import AuthService
 from src.services.jwt_service import JwtService
 from src.services.password_service import PasswordService
@@ -10,6 +12,8 @@ from src.database.repositories.user_repository import UserRepository
 from src.database.connection import get_async_db
 from src.services.product_service import ProductService
 from src.database.repositories.product_repository import ProductRepository
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 
 # Product
@@ -74,3 +78,14 @@ async def get_auth_service(
         jwt_service=jwt_service,
         password_service=password_service,
     )
+
+
+async def get_current_user(
+    token: str = Depends(oauth2_scheme),
+    jwt_service: JwtService = Depends(get_jwt_service),
+    user_service: UserService = Depends(get_user_service),
+) -> User:
+
+    payload = jwt_service.decode_token(token, "access")
+    user = await user_service.get_user(int(payload["sub"]))
+    return user
