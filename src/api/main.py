@@ -2,14 +2,18 @@ import logging
 import time
 
 
+from fastapi.responses import JSONResponse
+
 from slowapi import Limiter
 
-from fastapi import (
-    FastAPI,
-    Request,
+from fastapi import FastAPI, Request, status
+
+
+from src.exceptions.jwt_exceptions import ExpiredTokenError, InvalidTokenError
+from src.exceptions.user_exceptions import (
+    InvalidCredentialsError,
+    UserAlreadyExistsError,
 )
-
-
 from src.services.log_service import log_service
 
 
@@ -24,8 +28,37 @@ from src.config import (
 from src.api.routes.products import router as products_router
 from src.api.routes.users import router as users_router
 from src.api.routes.orders import router as orders_router
+from src.api.routes.auth import router as auth_router
 
 app = FastAPI(title="TUUS API", version="1.0.0")
+
+
+@app.exception_handler(UserAlreadyExistsError)
+async def user_already_exists_handler(request: Request, exc: UserAlreadyExistsError):
+    return JSONResponse(
+        status_code=status.HTTP_409_CONFLICT, content={"detail": str(exc)}
+    )
+
+
+@app.exception_handler(InvalidCredentialsError)
+async def invalid_credentials_handler(request: Request, exc: InvalidCredentialsError):
+    return JSONResponse(
+        status_code=status.HTTP_401_UNAUTHORIZED, content={"detail": str(exc)}
+    )
+
+
+@app.exception_handler(InvalidTokenError)
+async def invalid_token_handler(request: Request, exc: InvalidTokenError):
+    return JSONResponse(
+        status_code=status.HTTP_401_UNAUTHORIZED, content={"detail": str(exc)}
+    )
+
+
+@app.exception_handler(ExpiredTokenError)
+async def expired_token_handler(request: Request, exc: ExpiredTokenError):
+    return JSONResponse(
+        status_code=status.HTTP_401_UNAUTHORIZED, content={"detail": str(exc)}
+    )
 
 
 @app.middleware("http")
@@ -58,6 +91,7 @@ app.add_exception_handler(
 app.include_router(products_router)
 app.include_router(users_router)
 app.include_router(orders_router)
+app.include_router(auth_router)
 
 
 logging.basicConfig(level=logging.INFO)
