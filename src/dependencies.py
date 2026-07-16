@@ -1,6 +1,8 @@
 from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.ext.asyncio import AsyncSession
+from src.redis import redis_client
+from src.services.cache_service import CacheService
 from src.database.models import User
 from src.services.auth_service import AuthService
 from src.services.jwt_service import JwtService
@@ -16,6 +18,10 @@ from src.database.repositories.product_repository import ProductRepository
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 
+async def get_cache_service() -> CacheService:
+    return CacheService(redis_client)
+
+
 # Product
 async def get_product_repository(
     session: AsyncSession = Depends(get_async_db),
@@ -25,8 +31,9 @@ async def get_product_repository(
 
 async def get_product_service(
     product_repo: ProductRepository = Depends(get_product_repository),
+    cache_service: CacheService = Depends(get_cache_service),
 ) -> ProductService:
-    return ProductService(product_repo)
+    return ProductService(product_repo, cache_service)
 
 
 # User

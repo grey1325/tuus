@@ -20,8 +20,9 @@ def order_service_mock():
 @pytest.fixture
 def product_service_mock():
     product_repo = AsyncMock()
-    service = ProductService(product_repo)
-    return service, product_repo
+    cache_service = AsyncMock()
+    service = ProductService(product_repo, cache_service)
+    return service, product_repo, cache_service
 
 
 @pytest.fixture

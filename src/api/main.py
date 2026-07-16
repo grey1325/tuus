@@ -1,5 +1,6 @@
 import logging
 import time
+from contextlib import asynccontextmanager
 
 
 from fastapi.responses import JSONResponse
@@ -15,7 +16,7 @@ from src.exceptions.user_exceptions import (
     UserAlreadyExistsError,
 )
 from src.services.log_service import log_service
-
+from src.redis import redis_client
 
 from slowapi.middleware import SlowAPIMiddleware
 from fastapi.middleware.cors import CORSMiddleware
@@ -30,7 +31,26 @@ from src.api.routes.users import router as users_router
 from src.api.routes.orders import router as orders_router
 from src.api.routes.auth import router as auth_router
 
-app = FastAPI(title="TUUS API", version="1.0.0")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    try:
+        await redis_client.ping()
+        log_service.info("Redis connection successful")
+    except (ConnectionError, TimeoutError) as e:
+        log_service.warning(
+            f"Redis is unavailable ({e}). "
+            "The application will continue to run without cache."
+        )
+    yield
+    try:
+        await redis_client.aclose()
+        log_service.info("Redis connection closed")
+    except (ConnectionError, TimeoutError) as e:
+        log_service.warning(f"Failed to close Redis connection: {e}")
+
+
+app = FastAPI(title="TUUS API", version="1.0.0", lifespan=lifespan)
 
 
 @app.exception_handler(UserAlreadyExistsError)
