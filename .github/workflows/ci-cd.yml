@@ -48,6 +48,14 @@ jobs:
       #     pip install mypy
       #     mypy src/ --ignore-missing-imports
 
+      - name: Run database migrations
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/sfmshop_test
+          REDIS_URL: redis://localhost:6379/0
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
+        run: |
+          alembic upgrade head
+      
       - name: Run tests
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/sfmshop_test
