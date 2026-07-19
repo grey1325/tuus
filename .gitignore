@@ -7,6 +7,8 @@ __pycache__/
 
 # Файлы с переменными окружения (могут содержать секреты и настройки)
 .env
+.env.*
+!.env.example
 
 .env.docker
 
@@ -24,7 +26,7 @@ dist/
 # компиляции или упаковки проекта)
 build/
 
-*.pyc
+
 .vscode/
 
 # pytest
@@ -50,8 +52,6 @@ htmlcov/
 # Alembic
 *.db
 
-# Env examples
-.env.local
 
 # Educational materials
 learning/
@@ -68,3 +68,13 @@ coverage.xml
 *.pyd
 
 docs/
+
+# Python packaging
+*.egg-info/
+
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Python version managers
+.python-version

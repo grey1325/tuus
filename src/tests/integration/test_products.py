@@ -66,7 +66,6 @@ async def test_create_product(async_client, db_session):
     assert data["name"] == payload["name"]
     assert data["price"] == payload["price"]
     assert data["stock"] == payload["stock"]
-    print(response.json())
 
     query = select(Product).where(Product.id == data["id"])
     result = await db_session.execute(query)
