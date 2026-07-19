@@ -16,7 +16,7 @@ jobs:
         image: postgres:15
         env:
           POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: sfmshop_test
+          POSTGRES_DB: tuus_test
         ports:
           - 5432:5432
         options: >-
@@ -32,6 +32,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+          cache: "pip"
 
       - name: Install dependencies
         run: |
@@ -40,8 +41,10 @@ jobs:
 
       - name: Lint with ruff
         run: |
-          pip install ruff
           ruff check src/
+      - name: Check formatting with Black
+        run: |
+          black --check .
 
       # - name: Type check with mypy
       #   run: |
@@ -50,7 +53,7 @@ jobs:
 
       - name: Run database migrations
         env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/sfmshop_test
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/tuus_test
           REDIS_URL: redis://localhost:6379/0
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
         run: |
@@ -58,7 +61,7 @@ jobs:
       
       - name: Run tests
         env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/sfmshop_test
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/tuus_test
           REDIS_URL: redis://localhost:6379/0
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
         run: |
@@ -69,15 +72,6 @@ jobs:
         with:
           file: ./coverage.xml
 
-  deploy:
-    needs: test
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+  
 
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Deploy to Kubernetes
-        run: |
-          kubectl apply -f k8s/deployment.yaml
-          kubectl apply -f k8s/service.yaml
+      
